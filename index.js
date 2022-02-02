@@ -40,6 +40,14 @@ async function questionLoop() {
                 output = await employeeDB.addEmployee(connection);
                 console.log(`Congrats! a new Employee is named ${output} has be added!`);
                 break;
+            case "update an employee role":
+                output = await employeeDB.updateRole(connection);
+                console.log(`The Employee's Role has be updated.`);
+                break;
+            case "update employee manager":
+                output = await employeeDB.updateManager(connection);
+                console.log(`The Employee's Manager has be updated.`);
+                break;
             case "end this program.":
                 console.log("Ending program now.");
                 process.exit();

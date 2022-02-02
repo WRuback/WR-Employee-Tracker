@@ -60,7 +60,7 @@ class Database {
                 });
                 resolve(outputArray);
             });
-        }); 
+        });
         const words = await inquirer.prompt([
             {
                 type: "input",
@@ -90,7 +90,7 @@ class Database {
         const managers = await new Promise(function (resolve, Reject) {
             connection.query("SELECT * FROM employee", (err, results) => {
                 let outputArray = [];
-                for (const element of results){
+                for (const element of results) {
                     outputArray.push({
                         name: element.first_name + " " + element.last_name,
                         value: element.id
@@ -102,11 +102,11 @@ class Database {
                 })
                 resolve(outputArray);
             });
-        }); 
+        });
         const roles = await new Promise(function (resolve, Reject) {
             connection.query("SELECT * FROM role", (err, results) => {
                 let outputArray = [];
-                for (const element of results){
+                for (const element of results) {
                     outputArray.push({
                         name: element.title,
                         value: element.id
@@ -114,7 +114,7 @@ class Database {
                 }
                 resolve(outputArray);
             });
-        }); 
+        });
         const words = await inquirer.prompt([
             {
                 type: "input",
@@ -144,6 +144,110 @@ class Database {
             connection.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id)
             VALUES (?, ?, ?, ?)`, [words.employeeFName, words.employeeLName, words.employeeRole, words.employeeManager], (err, results) => {
                 resolve(words.employeeFName + " " + words.employeeLName);
+            });
+        });
+    }
+    async updateRole(connection) {
+        const employee = await new Promise(function (resolve, Reject) {
+            connection.query("SELECT * FROM employee", (err, results) => {
+                let outputArray = [];
+                for (const element of results) {
+                    outputArray.push({
+                        name: element.first_name + " " + element.last_name,
+                        value: element.id
+                    });
+                }
+                resolve(outputArray);
+            });
+        });
+        const employeeSelection = await inquirer.prompt([
+            {
+                type: "list",
+                message: "Which Employee is changing Roles?",
+                choices: employee,
+                name: "employee",
+            }
+        ]);
+        const roles = await new Promise(function (resolve, Reject) {
+            connection.query("SELECT * FROM role", (err, results) => {
+                let outputArray = [];
+                for (const element of results) {
+                    outputArray.push({
+                        name: element.title,
+                        value: element.id
+                    });
+                }
+                resolve(outputArray);
+            });
+        });
+        const roleSelection = await inquirer.prompt([
+            {
+                type: "list",
+                message: "What is their new Role?",
+                choices: roles,
+                name: "role",
+            }
+        ]);
+        return await new Promise(function (resolve, Reject) {
+            connection.query(`UPDATE employee
+            SET role_id = ?
+            WHERE id = ?;`, [roleSelection.role, employeeSelection.employee], (err, results) => {
+                resolve("complete");
+            });
+        });
+    }
+    async updateManager(connection) {
+        const employee = await new Promise(function (resolve, Reject) {
+            connection.query("SELECT * FROM employee", (err, results) => {
+                let outputArray = [];
+                for (const element of results) {
+                    outputArray.push({
+                        name: element.first_name + " " + element.last_name,
+                        value: element.id
+                    });
+                }
+                resolve(outputArray);
+            });
+        });
+        const employeeSelection = await inquirer.prompt([
+            {
+                type: "list",
+                message: "Which Employee is changing Managers?",
+                choices: employee,
+                name: "employee",
+            }
+        ]);
+        const manager = await new Promise(function (resolve, Reject) {
+            connection.query("SELECT * FROM employee", (err, results) => {
+                let outputArray = [];
+                for (const element of results) {
+                    if (employeeSelection.employee !== element.id) {
+                        outputArray.push({
+                            name: element.first_name + " " + element.last_name,
+                            value: element.id
+                        });
+                    }
+                }
+                outputArray.unshift({
+                    name: "none",
+                    value: null
+                })
+                resolve(outputArray);
+            });
+        });
+        const managerSelection = await inquirer.prompt([
+            {
+                type: "list",
+                message: "Who is their new Manager?",
+                choices: manager,
+                name: "manager",
+            }
+        ]);
+        return await new Promise(function (resolve, Reject) {
+            connection.query(`UPDATE employee
+            SET manager_id = ?
+            WHERE id = ?;`, [managerSelection.manager, employeeSelection.employee], (err, results) => {
+                resolve("complete");
             });
         });
     }

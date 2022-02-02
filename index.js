@@ -1,55 +1,11 @@
 const inquirer = require("inquirer");
-const mysql = require("mysql2");
 const cTable = require("console.table");
 
 const loopQuestions = require("./questions.js");
+const employeeDB = require("./db/dbFunctions.js");
+const connection = require("./db/connection.js");
 
-const db = mysql.createConnection(
-    {
-        host: 'localhost',
-        // MySQL username,
-        user: 'root',
-        // MySQL password
-        password: 'RootRoot1234.',
-        database: 'employees_db'
-    },
-    console.log(`Connected to the employees_db database.`)
-);
-
-async function viewDepartments() {
-    return await new Promise(function(resolve, Reject){
-        db.query("SELECT * FROM department", (err, results) => {
-            resolve(results);
-        });
-    });
-}
-async function viewRoles() {
-    return await new Promise(function(resolve, Reject){
-        db.query("SELECT role.id, role.title, role.salary, department.name AS department_name FROM role INNER JOIN department ON role.department_id = department.id ORDER BY role.id;", (err, results) => {
-            resolve(results);
-        });
-    });
-}
-async function viewEmployees() {
-    return await new Promise(function(resolve, Reject){
-        db.query(`SELECT e.id, 
-        e.first_name, 
-        e.last_name, 
-        ROLE.title AS role, 
-        ROLE.salary AS salary, 
-        department.name AS department,
-        m.last_name AS Manager
-        FROM employee e
-        INNER JOIN ROLE ON e.role_id = ROLE.id 
-        INNER JOIN department ON ROLE.department_id = department.id
-        LEFT JOIN employee m ON e.manager_id  = m.id 
-        ORDER BY e.id; `, (err, results) => {
-            resolve(results);
-        });
-    });
-}
-
-async function questionLoop(database) {
+async function questionLoop() {
     while (true) {
         const action = await inquirer.prompt(loopQuestions)
             .then(({ userChoice }) => {
@@ -58,23 +14,23 @@ async function questionLoop(database) {
         let output = "";
         switch (action) {
             case "view all departments":
-                output = await viewDepartments();
+                output = await employeeDB.viewDepartments(connection);
                 console.log("\ndepartments");
                 console.table(output);
                 break;
             case "view all roles":
-                output = await viewRoles();
+                output = await employeeDB.viewRoles(connection);
                 console.log("\nroles");
                 console.table(output);
                 break;
             case "view all employees":
-                output = await viewEmployees();
+                output = await employeeDB.viewEmployees(connection);
                 console.log("\nemployees");
                 console.table(output);
                 break;
             case "end this program.":
                 console.log("Ending program now.");
-                return;
+                process.exit();
             default:
                 console.log(action);
         };
@@ -82,7 +38,7 @@ async function questionLoop(database) {
 }
 
 async function init() {
-    questionLoop(db);
+    questionLoop();
 }
 
 init();

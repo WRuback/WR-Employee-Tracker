@@ -45,7 +45,7 @@ Once the program is running, you will be prompted by what you want to do:
 
 ## Video Walthrough
 
-[Watch the video walkthrough here]()
+[Watch the video walkthrough here.](https://drive.google.com/file/d/1PAk1JhZwR88n1xZdIxRyqP2X-_cN_9iv/view?usp=sharing)
 
 ## Contributing
 

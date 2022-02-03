@@ -1,17 +1,27 @@
 const inquirer = require("inquirer");
 const cTable = require("console.table");
 
+// Used to store the loop questions.
 const loopQuestions = require("./questions.js");
+// Used to store the query functions.
 const employeeDB = require("./db/dbFunctions.js");
+// Used to connect to the mysql database.
 const connection = require("./db/connection.js");
 
+// Loops through the question, then runs the function lniked to it.
+// Runs until the "end program" is selected, which ends the whole CLI. 
 async function questionLoop() {
+    
     while (true) {
         const action = await inquirer.prompt(loopQuestions)
             .then(({ userChoice }) => {
                 return userChoice;
             });
         let output = "";
+        // This switch statement has a section for each option to the question.
+        // It then runs the function from dbFunctions, taking the connection as a parameter.
+        // It then displays the output or message.
+        // The loop then repeats, asking the same question.
         switch (action) {
             case "view all departments.":
                 output = await employeeDB.viewDepartments(connection);
@@ -84,8 +94,10 @@ async function questionLoop() {
     }
 }
 
+// Starts the program.
 async function init() {
     questionLoop();
 }
 
+// Runs the start.
 init();

@@ -1,3 +1,4 @@
+// Exports all the questions for the inquirer loop.
 module.exports = [
     {
         type: "list",

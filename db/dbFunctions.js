@@ -1,6 +1,6 @@
 const inquirer = require("inquirer");
 class Database {
-
+    // Gets the Object of the departments table from MySql.
     async viewDepartments(connection) {
         return await new Promise(function (resolve, Reject) {
             connection.query("SELECT * FROM department", (err, results) => {
@@ -8,6 +8,8 @@ class Database {
             });
         });
     }
+    // Gets the Object of the Roles table from MySql. 
+    // Joins from department to display the deparment name.
     async viewRoles(connection) {
         return await new Promise(function (resolve, Reject) {
             connection.query("SELECT role.id, role.title, role.salary, department.name AS department_name FROM role LEFT JOIN department ON role.department_id = department.id ORDER BY role.id;", (err, results) => {
@@ -15,6 +17,8 @@ class Database {
             });
         });
     }
+    // Gets the Object of the Employee table from MySql. 
+    // Joins from roles, the department to display the role and deparment names.
     async viewEmployees(connection) {
         return await new Promise(function (resolve, Reject) {
             connection.query(`SELECT e.id, 
@@ -33,6 +37,8 @@ class Database {
             });
         });
     }
+    // Calls the Object of the employee Table, but orders them by manager, 
+    // Using inner join to not get those with no manager.
     async viewEmployeesByManager(connection) {
         return await new Promise(function (resolve, Reject) {
             connection.query(`SELECT concat(m.first_name, ' ', m.last_name) AS Manager,
@@ -51,6 +57,8 @@ class Database {
             });
         });
     }
+    // Calls the Object of the employee Table, but orders them by department, 
+    // Using left join to get those with no department.
     async viewEmployeesByDepartment(connection) {
         return await new Promise(function (resolve, Reject) {
             connection.query(`SELECT department.name AS department,
@@ -69,6 +77,9 @@ class Database {
             });
         });
     }
+    // Get the department name and total slaries paid by them.
+    // Does this by using the employee, getting the roles and department from Inner Joins,
+    // Then groups them by department name for a sum function.
     async viewBudgets(connection) {
         return await new Promise(function (resolve, Reject) {
             connection.query(`SELECT department.name, SUM(role.salary) AS Salary_Budget
@@ -80,6 +91,7 @@ class Database {
             });
         });
     }
+    // Inquirer prompts for the department name, then adds the department with a insert query.
     async addDepartment(connection) {
         const words = await inquirer.prompt([
             {
@@ -95,7 +107,11 @@ class Database {
             });
         });
     }
+    // Inquirer prompts for the role name and salary, 
+    // Then prompts from the list of departments,
+    // Then adds the role with a insert query.
     async addRole(connection) {
+        // Queries for the departments, and reformats them to be used as a list in the inquirer prompts.
         const departments = await new Promise(function (resolve, Reject) {
             connection.query("SELECT * FROM department", (err, results) => {
                 let outputArray = [];
@@ -133,7 +149,11 @@ class Database {
             });
         });
     }
+    // Inquirer prompts for the first name and last name, 
+    // Then prompts from the list of roles and departments,
+    // Then adds the employee with a insert query.
     async addEmployee(connection) {
+        // Queries for the employees, and reformats them to be used as a list in the inquirer prompts.
         const managers = await new Promise(function (resolve, Reject) {
             connection.query("SELECT * FROM employee", (err, results) => {
                 let outputArray = [];
@@ -150,6 +170,7 @@ class Database {
                 resolve(outputArray);
             });
         });
+        // Queries for the Roles, and reformats them to be used as a list in the inquirer prompts.
         const roles = await new Promise(function (resolve, Reject) {
             connection.query("SELECT * FROM role", (err, results) => {
                 let outputArray = [];
@@ -194,7 +215,11 @@ class Database {
             });
         });
     }
+    // Inquirer prompts from a list of employees, 
+    // Then prompts from the list of roles,
+    // Then updates the employee with a new role with the update query.
     async updateRole(connection) {
+        // Queries for the employees, and reformats them to be used as a list in the inquirer prompts.
         const employee = await new Promise(function (resolve, Reject) {
             connection.query("SELECT * FROM employee", (err, results) => {
                 let outputArray = [];
@@ -215,6 +240,7 @@ class Database {
                 name: "employee",
             }
         ]);
+        // Queries for the Roles, and reformats them to be used as a list in the inquirer prompts.
         const roles = await new Promise(function (resolve, Reject) {
             connection.query("SELECT * FROM role", (err, results) => {
                 let outputArray = [];
@@ -243,7 +269,11 @@ class Database {
             });
         });
     }
+    // Inquirer prompts from a list of employees, 
+    // Then prompts from the list of employees to be the manager,
+    // Then updates the employee with a new manager with the update query.
     async updateManager(connection) {
+        // Queries for the employees, and reformats them to be used as a list in the inquirer prompts.
         const employee = await new Promise(function (resolve, Reject) {
             connection.query("SELECT * FROM employee", (err, results) => {
                 let outputArray = [];
@@ -264,6 +294,7 @@ class Database {
                 name: "employee",
             }
         ]);
+        // Queries for the employees, excludes the current one, and reformats them to be used as a list in the inquirer prompts.
         const manager = await new Promise(function (resolve, Reject) {
             connection.query("SELECT * FROM employee", (err, results) => {
                 let outputArray = [];
@@ -298,7 +329,11 @@ class Database {
             });
         });
     }
+    // Inquirer prompts from a list of departments, 
+    // Then deletes the department with a query.
+    // Does not remove the employees or roles linked to them.
     async deleteDepartment(connection) {
+        // Queries for the departments, and reformats them to be used as a list in the inquirer prompts.
         const departments = await new Promise(function (resolve, Reject) {
             connection.query("SELECT * FROM department", (err, results) => {
                 let outputArray = [];
@@ -326,7 +361,11 @@ class Database {
             });
         });
     }
+    // Inquirer prompts from a list of roles, 
+    // Then deletes the roles with a query.
+    // Does not remove the employeeslinked to them.
     async deleteRole(connection) {
+        // Queries for the roles, and reformats them to be used as a list in the inquirer prompts.
         const roles = await new Promise(function (resolve, Reject) {
             connection.query("SELECT * FROM role", (err, results) => {
                 let outputArray = [];
@@ -354,7 +393,10 @@ class Database {
             });
         });
     }
+    // Inquirer prompts from a list of employees, 
+    // Then deletes the employee with a query.
     async deleteEmployee(connection) {
+        // Queries for the employees, and reformats them to be used as a list in the inquirer prompts.
         const employee = await new Promise(function (resolve, Reject) {
             connection.query("SELECT * FROM employee", (err, results) => {
                 let outputArray = [];
@@ -383,4 +425,6 @@ class Database {
         });
     }
 }
+
+// Eports to be used in the database.
 module.exports = new Database();

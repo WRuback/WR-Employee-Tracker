@@ -10,7 +10,7 @@ class Database {
     }
     async viewRoles(connection) {
         return await new Promise(function (resolve, Reject) {
-            connection.query("SELECT role.id, role.title, role.salary, department.name AS department_name FROM role INNER JOIN department ON role.department_id = department.id ORDER BY role.id;", (err, results) => {
+            connection.query("SELECT role.id, role.title, role.salary, department.name AS department_name FROM role LEFT JOIN department ON role.department_id = department.id ORDER BY role.id;", (err, results) => {
                 resolve(results);
             });
         });
@@ -25,8 +25,8 @@ class Database {
         department.name AS department,
         m.last_name AS Manager
         FROM employee e
-        INNER JOIN ROLE ON e.role_id = ROLE.id 
-        INNER JOIN department ON ROLE.department_id = department.id
+        LEFT JOIN ROLE ON e.role_id = ROLE.id 
+        LEFT JOIN department ON ROLE.department_id = department.id
         LEFT JOIN employee m ON e.manager_id  = m.id 
         ORDER BY e.id; `, (err, results) => {
                 resolve(results);
@@ -248,6 +248,90 @@ class Database {
             SET manager_id = ?
             WHERE id = ?;`, [managerSelection.manager, employeeSelection.employee], (err, results) => {
                 resolve("complete");
+            });
+        });
+    }
+    async deleteDepartment(connection) {
+        const departments = await new Promise(function (resolve, Reject) {
+            connection.query("SELECT * FROM department", (err, results) => {
+                let outputArray = [];
+                results.forEach(element => {
+                    outputArray.push({
+                        name: element.name,
+                        value: element.id
+                    });
+                });
+                resolve(outputArray);
+            });
+        });
+        const words = await inquirer.prompt([
+            {
+                type: "list",
+                message: "What is the Department you want to delete?",
+                choices: departments,
+                name: "departmentID",
+            }
+        ]);
+        return await new Promise(function (resolve, Reject) {
+            connection.query(`DELETE FROM department
+            WHERE id = ?;`, [words.departmentID], (err, results) => {
+                resolve(words.departmentID);
+            });
+        });
+    }
+    async deleteRole(connection) {
+        const roles = await new Promise(function (resolve, Reject) {
+            connection.query("SELECT * FROM role", (err, results) => {
+                let outputArray = [];
+                results.forEach(element => {
+                    outputArray.push({
+                        name: element.title,
+                        value: element.id
+                    });
+                });
+                resolve(outputArray);
+            });
+        });
+        const words = await inquirer.prompt([
+            {
+                type: "list",
+                message: "What is the Role you want to delete?",
+                choices: roles,
+                name: "roleID",
+            }
+        ]);
+        return await new Promise(function (resolve, Reject) {
+            connection.query(`DELETE FROM role
+            WHERE id = ?;`, [words.roleID], (err, results) => {
+                resolve(words.roleID);
+            });
+        });
+    }
+    async deleteEmployee(connection) {
+        const employee = await new Promise(function (resolve, Reject) {
+            connection.query("SELECT * FROM employee", (err, results) => {
+                let outputArray = [];
+                for (const element of results) {
+                    outputArray.push({
+                        name: element.first_name + " " + element.last_name,
+                        value: element.id
+                    });
+                }
+                resolve(outputArray);
+            });
+        });
+        const words = await inquirer.prompt([
+            {
+                type: "list",
+                message: "Who is the Employee you want to delete?",
+                choices: employee,
+                name: "employeeID",
+            }
+        ]);
+        return await new Promise(function (resolve, Reject) {
+            connection.query(`DELETE FROM employee
+            WHERE id = ?;`, [words.employeeID], (err, results) => {
+                resolve(words.employeeID);
             });
         });
     }

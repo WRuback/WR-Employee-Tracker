@@ -48,6 +48,18 @@ async function questionLoop() {
                 output = await employeeDB.updateManager(connection);
                 console.log(`The Employee's Manager has be updated.`);
                 break;
+            case "delete a department.":
+                output = await employeeDB.deleteDepartment(connection);
+                console.log(`The department has been deleted. The roles and employees linked to it have not.`);
+                break;
+            case "delete a role.":
+                output = await employeeDB.deleteRole(connection);
+                console.log(`The Role has been deleted. The employees linked to it have not.`);
+                break;
+            case "delete an employee.":
+                output = await employeeDB.deleteEmployee(connection);
+                console.log(`The Employee has been deleted. The employees linked to it have not.`);
+                break;
             case "end this program.":
                 console.log("Ending program now.");
                 process.exit();

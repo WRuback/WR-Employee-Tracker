@@ -28,6 +28,16 @@ async function questionLoop() {
                 console.log("\nemployees");
                 console.table(output);
                 break;
+            case "view employees by manager.":
+                output = await employeeDB.viewEmployeesByManager(connection);
+                console.log("\nemployees by Manager");
+                console.table(output);
+                break;
+            case "view total budget (combined salary) of a department.":
+                output = await employeeDB.viewBudgets(connection);
+                console.log("\nDepartment Salary Budget");
+                console.table(output);
+                break;
             case "add a department":
                 output = await employeeDB.addDepartment(connection);
                 console.log(`Congrats! a new department named ${output} has be added!`);

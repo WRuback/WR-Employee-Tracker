@@ -23,12 +23,40 @@ class Database {
         ROLE.title AS role, 
         ROLE.salary AS salary, 
         department.name AS department,
-        m.last_name AS Manager
+        concat(m.first_name, ' ', m.last_name) AS Manager
         FROM employee e
         LEFT JOIN ROLE ON e.role_id = ROLE.id 
         LEFT JOIN department ON ROLE.department_id = department.id
         LEFT JOIN employee m ON e.manager_id  = m.id 
         ORDER BY e.id; `, (err, results) => {
+                resolve(results);
+            });
+        });
+    }
+    async viewEmployeesByManager(connection) {
+        return await new Promise(function (resolve, Reject) {
+            connection.query(`SELECT concat(m.first_name, ' ', m.last_name) AS Manager,
+        e.first_name, 
+        e.last_name,
+        e.id, 
+        ROLE.title AS role, 
+        ROLE.salary AS salary, 
+        department.name AS department
+        FROM employee e
+        LEFT JOIN ROLE ON e.role_id = ROLE.id 
+        LEFT JOIN department ON ROLE.department_id = department.id
+        INNER JOIN employee m ON e.manager_id  = m.id 
+        ORDER BY m.first_name; `, (err, results) => {
+                resolve(results);
+            });
+        });
+    }
+    async viewBudgets(connection) {
+        return await new Promise(function (resolve, Reject) {
+            connection.query(`SELECT department.name, SUM(role.salary) AS Salary_Budget
+            FROM department
+            INNER JOIN role ON department.id = role.department_id 
+            GROUP BY department.name;`, (err, results) => {
                 resolve(results);
             });
         });

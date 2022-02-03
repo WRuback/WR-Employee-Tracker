@@ -96,8 +96,7 @@ async function questionLoop() {
 
 // Starts the program.
 async function init() {
-    console.log(`
-     ______                 _                       
+    console.log(`     ______                 _                       
     |  ____|               | |                      
     | |__   _ __ ___  _ __ | | ___  _   _  ___  ___ 
     |  __| | '_ \` _ \\| '_ \\| |/ _ \\| | | |/ _ \\/ _ \\
@@ -109,7 +108,8 @@ async function init() {
     | |  | | (_| | | | | (_| | (_| |  __/ |         
     |_|  |_|\\__,_|_| |_|\\__,_|\\__, |\\___|_|         
                                __/ |                
-                              |___/                 `);
+                              |___/                 
+    `);
     questionLoop();
 }
 

@@ -13,17 +13,17 @@ async function questionLoop() {
             });
         let output = "";
         switch (action) {
-            case "view all departments":
+            case "view all departments.":
                 output = await employeeDB.viewDepartments(connection);
                 console.log("\ndepartments");
                 console.table(output);
                 break;
-            case "view all roles":
+            case "view all roles.":
                 output = await employeeDB.viewRoles(connection);
                 console.log("\nroles");
                 console.table(output);
                 break;
-            case "view all employees":
+            case "view all employees.":
                 output = await employeeDB.viewEmployees(connection);
                 console.log("\nemployees");
                 console.table(output);
@@ -33,28 +33,33 @@ async function questionLoop() {
                 console.log("\nemployees by Manager");
                 console.table(output);
                 break;
+            case "view employees by department.":
+                output = await employeeDB.viewEmployeesByDepartment(connection);
+                console.log("\nemployees by Department");
+                console.table(output);
+                break;
             case "view total budget (combined salary) of a department.":
                 output = await employeeDB.viewBudgets(connection);
                 console.log("\nDepartment Salary Budget");
                 console.table(output);
                 break;
-            case "add a department":
+            case "add a department.":
                 output = await employeeDB.addDepartment(connection);
                 console.log(`Congrats! a new department named ${output} has be added!`);
                 break;
-            case "add a role":
+            case "add a role.":
                 output = await employeeDB.addRole(connection);
                 console.log(`Congrats! a new role named ${output} has be added!`);
                 break;
-            case "add an employee":
+            case "add an employee.":
                 output = await employeeDB.addEmployee(connection);
                 console.log(`Congrats! a new Employee is named ${output} has be added!`);
                 break;
-            case "update an employee role":
+            case "update an employee role.":
                 output = await employeeDB.updateRole(connection);
                 console.log(`The Employee's Role has be updated.`);
                 break;
-            case "update employee manager":
+            case "update employee manager.":
                 output = await employeeDB.updateManager(connection);
                 console.log(`The Employee's Manager has be updated.`);
                 break;

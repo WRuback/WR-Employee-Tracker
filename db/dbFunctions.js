@@ -51,12 +51,31 @@ class Database {
             });
         });
     }
+    async viewEmployeesByDepartment(connection) {
+        return await new Promise(function (resolve, Reject) {
+            connection.query(`SELECT department.name AS department,
+        e.first_name, 
+        e.last_name,
+        e.id, 
+        ROLE.title AS role, 
+        ROLE.salary AS salary, 
+        concat(m.first_name, ' ', m.last_name) AS Manager
+        FROM employee e
+        LEFT JOIN ROLE ON e.role_id = ROLE.id 
+        LEFT JOIN department ON ROLE.department_id = department.id
+        LEFT JOIN employee m ON e.manager_id  = m.id 
+        ORDER BY department.name; `, (err, results) => {
+                resolve(results);
+            });
+        });
+    }
     async viewBudgets(connection) {
         return await new Promise(function (resolve, Reject) {
             connection.query(`SELECT department.name, SUM(role.salary) AS Salary_Budget
-            FROM department
-            INNER JOIN role ON department.id = role.department_id 
-            GROUP BY department.name;`, (err, results) => {
+            FROM employee
+            INNER JOIN role ON employee.role_id = role.id
+            INNER JOIN department ON role.department_id = department.id 
+            GROUP BY department.name`, (err, results) => {
                 resolve(results);
             });
         });
